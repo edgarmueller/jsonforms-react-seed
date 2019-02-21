@@ -1,23 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App, {MyArrayRenderer} from './App';
 import registerServiceWorker from './registerServiceWorker';
-import { combineReducers, createStore } from 'redux';
-import { Provider } from 'react-redux';
+import {combineReducers, createStore} from 'redux';
+import {Provider} from 'react-redux';
 import schema from './schema.json';
 import uischema from './uischema.json';
-import { Actions, jsonformsReducer } from '@jsonforms/core';
-import { materialFields, materialRenderers } from '@jsonforms/material-renderers';
+import {
+  Actions,
+  ControlElement,
+  jsonformsReducer,
+  NOT_APPLICABLE,
+  VerticalLayout,
+  withIncreasedRank
+} from '@jsonforms/core';
+import {materialArrayControlTester, materialFields, materialRenderers} from '@jsonforms/material-renderers';
 import RatingControl from './RatingControl';
 import ratingControlTester from './ratingControlTester'
 
 const data = {
-  name: 'Send email to Adrian',
-  description: 'Confirm if you have passed the subject\nHereby ...',
-  done: true,
-  recurrence: 'Daily',
-  rating: 3,
+  clients: [
+    {
+      firstName: 'bart'
+    },
+    {
+      firstName: 'lisa'
+    },
+  ]
 };
 
 const store = createStore(
@@ -31,6 +41,27 @@ const store = createStore(
 );
 
 store.dispatch(Actions.init(data, schema, uischema));
+store.dispatch(Actions.registerRenderer(withIncreasedRank(1, materialArrayControlTester), MyArrayRenderer));
+store.dispatch(Actions.registerUISchema(
+  (jsonSchema, schemaPath) => {
+    return schemaPath === '#/properties/clients' ? 2 : NOT_APPLICABLE;
+  },
+  {
+    type: 'VerticalLayout',
+    elements: [
+      {
+        type: 'Control',
+        scope: '#/properties/firstName'
+      } as ControlElement,
+      {
+        type: 'Control',
+        scope: '#/properties/lastName'
+      }
+    ]
+  } as VerticalLayout
+));
+
+
 
 
 // Uncomment this line (and respective import) to register our custom renderer

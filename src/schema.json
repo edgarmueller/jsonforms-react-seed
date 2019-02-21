@@ -1,37 +1,42 @@
 {
   "type": "object",
   "properties": {
-    "name": {
-      "type": "string"
-    },
-    "description": {
-      "type": "string"
-    },
-    "done": {
-      "type": "boolean"
-    },
-    "due_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "rating": {
-      "type": "integer",
-      "maximum": 5
-    },
-    "recurrence": {
-      "type": "string",
-      "enum": [
-        "Never",
-        "Daily",
-        "Weekly",
-        "Monthly"
-      ]
-    },
-    "recurrence_interval": {
-      "type": "integer"
+    "clients": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "firstName"
+        ],
+        "properties": {
+          "Client ID": {
+            "type": "string",
+            "title": "Service to Client"
+          },
+          "startDate": {
+            "type": "string",
+            "title": "Start Date",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "title": "End Date",
+            "format": "date"
+          },
+          "firstName": {
+            "type": "string",
+            "title": "First name"
+          },
+          "middleName": {
+            "type": "string",
+            "title": "Middle name"
+          },
+          "lastName": {
+            "type": "string",
+            "title": "Last name"
+          }
+        }
+      }
     }
-  },
-  "required": [
-    "name"
-  ]
+  }
 }

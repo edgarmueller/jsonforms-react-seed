@@ -1,10 +1,18 @@
 import { connect } from 'react-redux';
+import _  from 'lodash';
 import { JsonForms } from '@jsonforms/react';
 import React from 'react';
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import withStyles, { WithStyles } from "@material-ui/core/styles/withStyles";
-import {getData, JsonFormsState} from '@jsonforms/core';
+import {
+  ControlElement,
+  getData,
+  JsonFormsState,
+  mapDispatchToArrayControlProps,
+  mapStateToArrayControlProps, Paths,
+  Resolve
+} from '@jsonforms/core';
 import logo from './logo.svg';
 import './App.css';
 import createStyles from "@material-ui/core/styles/createStyles";
@@ -31,6 +39,38 @@ const styles = createStyles({
 export interface AppProps extends WithStyles<typeof styles> {
   dataAsString: string;
 }
+
+export const Playground =
+  ({ data, path, schema, onAdd, uischema, findUISchema, scopedSchema }: any) => {
+
+    const controlElement = uischema as ControlElement;
+
+    return (
+      <fieldset>
+        <legend>My Control</legend>
+        <div>
+          {
+            data ? _.range(0, data.length).map((index: number) => {
+
+              const uischema = findUISchema(scopedSchema, controlElement.scope, path);
+              const childPath = Paths.compose(path, `${index}`);
+
+              return (
+                <JsonForms
+                  schema={scopedSchema}
+                  uischema={uischema}
+                  path={childPath}
+                  key={childPath}
+                />
+              );
+            }) : <p>No data</p>
+          }
+        </div>
+      </fieldset>
+    );
+  };
+
+export const MyArrayRenderer = connect(mapStateToArrayControlProps, mapDispatchToArrayControlProps)(Playground);
 
 class App extends React.Component<AppProps, any> {
 
@@ -66,7 +106,7 @@ class App extends React.Component<AppProps, any> {
               Rendered form
             </Typography>
             <div className={classes.demoform}>
-              <JsonForms/>
+              <JsonForms />
             </div>
           </Grid>
         </Grid>

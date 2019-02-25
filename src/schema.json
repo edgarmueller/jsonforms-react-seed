@@ -9,7 +9,7 @@
           "firstName"
         ],
         "properties": {
-          "Client ID": {
+          "clientId": {
             "type": "string",
             "title": "Service to Client"
           },

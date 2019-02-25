@@ -1,16 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App, {MyArrayRenderer} from './App';
+import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import {combineReducers, createStore} from 'redux';
-import {Provider} from 'react-redux';
+import {connect, Provider} from 'react-redux';
 import schema from './schema.json';
 import uischema from './uischema.json';
 import {
   Actions,
   ControlElement,
+  HorizontalLayout,
   jsonformsReducer,
+  mapDispatchToArrayControlProps,
+  mapStateToArrayControlProps,
   NOT_APPLICABLE,
   VerticalLayout,
   withIncreasedRank
@@ -18,6 +21,7 @@ import {
 import {materialArrayControlTester, materialFields, materialRenderers} from '@jsonforms/material-renderers';
 import RatingControl from './RatingControl';
 import ratingControlTester from './ratingControlTester'
+import {MaterialArrayLayoutRenderer} from "@jsonforms/material-renderers/lib/layouts/MaterialArrayLayoutRenderer";
 
 const data = {
   clients: [
@@ -41,7 +45,10 @@ const store = createStore(
 );
 
 store.dispatch(Actions.init(data, schema, uischema));
-store.dispatch(Actions.registerRenderer(withIncreasedRank(1, materialArrayControlTester), MyArrayRenderer));
+store.dispatch(Actions.registerRenderer(
+  withIncreasedRank(1, materialArrayControlTester),
+  connect(mapStateToArrayControlProps, mapDispatchToArrayControlProps)(MaterialArrayLayoutRenderer))
+);
 store.dispatch(Actions.registerUISchema(
   (jsonSchema, schemaPath) => {
     return schemaPath === '#/properties/clients' ? 2 : NOT_APPLICABLE;
@@ -50,13 +57,39 @@ store.dispatch(Actions.registerUISchema(
     type: 'VerticalLayout',
     elements: [
       {
-        type: 'Control',
-        scope: '#/properties/firstName'
-      } as ControlElement,
+        type: 'HorizontalLayout',
+        elements: [
+          {
+            type: 'Control',
+            scope: '#/properties/clientId'
+          } as ControlElement,
+          {
+            type: 'Control',
+            scope: '#/properties/startDate'
+          },
+          {
+            type: 'Control',
+            scope: '#/properties/endDate'
+          }
+        ]
+      } as HorizontalLayout,
       {
-        type: 'Control',
-        scope: '#/properties/lastName'
-      }
+        type: 'HorizontalLayout',
+        elements: [
+          {
+            type: 'Control',
+            scope: '#/properties/firstName'
+          } as ControlElement,
+          {
+            type: 'Control',
+            scope: '#/properties/middleName'
+          },
+          {
+            type: 'Control',
+            scope: '#/properties/lastName'
+          }
+        ]
+      }  as HorizontalLayout,
     ]
   } as VerticalLayout
 ));
